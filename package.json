@@ -1,39 +1,38 @@
 {
-  "name": "ninetwo-gtag",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/react": "^19.2.8",
-    "@types/react-dom": "^19.2.3",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
-  },
-  "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
+  "name": "ninetwo-user-tracking",
+  "version": "1.0.6",
+  "description": "User tracking abstraction for React/Nextjs with GTM",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "README.md",
-    "package.json"
+    "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "tracking",
+    "gtm",
+    "analytics"
+  ],
+  "author": "NineTwo",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://guirossetim-M2Z@github.com/guirossetim-M2Z/ninetwo-gtag.git"
   }
 }
