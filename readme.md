@@ -244,6 +244,60 @@ Neste exemplo acima, dois eventos serão enviados ao DataLayer:
 * type: `"read_confirmation"`
 
 
+---
+
+Aqui está a documentação exclusiva para o rastreamento de **Submit de Formulários**, pronta para copiar e colar.
+
+---
+
+## 📝 Rastreamento de Formulários (Submit)
+
+O pacote detecta automaticamente o envio de formulários através de **Event Delegation**.
+Isso significa que você deve adicionar os atributos de rastreamento **diretamente na tag `<form>**`, e não no botão de enviar.
+
+O evento será disparado tanto ao clicar no botão `type="submit"` quanto ao pressionar `Enter` dentro de um input.
+
+### Exemplo de Implementação
+
+```tsx
+<form
+  action="/api/newsletter"
+  method="POST"
+  // Atributos de Tracking na tag FORM (Obrigatório)
+  data-nt-ut-event="newsletter_signup"
+  data-nt-ut-category="leads"
+  data-nt-ut-label="footer_form"
+  // data-nt-ut-type="submit" -> (Opcional: o padrão já é 'submit' para formulários)
+>
+  <div className="flex gap-2">
+    <input 
+      type="email" 
+      name="email" 
+      placeholder="Seu melhor e-mail" 
+      className="border p-2"
+    />
+    <button type="submit" className="bg-blue-500 text-white p-2">
+      Inscrever-se
+    </button>
+  </div>
+</form>
+
+```
+
+### O que acontece no DataLayer?
+
+Quando o usuário envia este formulário, o seguinte objeto é enviado para o GTM:
+
+```javascript
+{
+  event: "newsletter_signup",  // Valor de data-nt-ut-event
+  event_category: "leads",     // Valor de data-nt-ut-category
+  event_label: "footer_form",  // Valor de data-nt-ut-label
+  event_type: "submit",        // Automático para tags <form>
+  interaction_time: "2024-01-20T14:00:00.000Z"
+}
+
+```
 
 ---
 
