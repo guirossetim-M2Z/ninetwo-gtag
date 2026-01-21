@@ -1,6 +1,6 @@
 {
   "name": "ninetwo-user-tracking",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "User tracking abstraction for React/Nextjs with GTM",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
