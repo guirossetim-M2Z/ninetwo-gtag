@@ -3,123 +3,86 @@
 import React, { useEffect } from 'react';
 import { useAutoTrackClick } from './hooks/useAutoTrackClick';
 import { useAutoTrackSubmit } from './hooks/useAutoTrackSubmit';
+import { captureAttribution } from './utils/gtm';
 
 interface TrackingProviderProps {
   children: React.ReactNode;
-  gtmId?: string; // Pode ser G-XXXX (GA4) ou GTM-XXXX
+  gtmId?: string; // Ex: GTM-XXXXXX
   debug?: boolean;
 }
 
-export const TrackingProvider: React.FC<TrackingProviderProps> = ({
-  children,
-  gtmId,
-  debug = false,
+export const TrackingProvider: React.FC<TrackingProviderProps> = ({ 
+  children, 
+  gtmId, 
+  debug = false 
 }) => {
-  // 🔹 Listeners globais
-  useAutoTrackClick(true);
-  useAutoTrackSubmit(true);
+  
+  // 1. Inicializa listeners globais de interação
+  useAutoTrackClick(true);   // Cliques
+  useAutoTrackSubmit(true);  // Formulários
 
+  // 2. Captura UTMs e Referrer para Atribuição (Persistência)
   useEffect(() => {
-    if (!gtmId || typeof window === 'undefined') {
-      if (debug && !gtmId) {
-        console.warn('[NineTwo Tracking] Nenhum ID fornecido.');
+    captureAttribution();
+    
+    if (debug) {
+      const source = typeof sessionStorage !== 'undefined' 
+        ? sessionStorage.getItem('nt_attr_utm_source') 
+        : null;
+        
+      if (source) {
+        console.log(`[NineTwo Tracking] 🔗 Origem capturada: ${source}`);
       }
+    }
+  }, [debug]);
+
+  // 3. Injeção do Script do GTM
+  useEffect(() => {
+    // Validações iniciais
+    if (typeof window === 'undefined') return;
+    
+    if (!gtmId) {
+      if (debug) console.warn('[NineTwo Tracking] ⚠️ GTM ID não fornecido.');
       return;
     }
 
-    const isGA4 = gtmId.startsWith('G-');
-    const isGTM = gtmId.startsWith('GTM-');
+    const scriptId = 'ninetwo-gtm-script';
 
-    if (!isGA4 && !isGTM) {
-      console.warn('[NineTwo Tracking] ID inválido:', gtmId);
+    // Evita duplicidade de script
+    if (document.getElementById(scriptId)) {
+      if (debug) console.log('[NineTwo Tracking] ℹ️ Script GTM já existente. Ignorando reinjeção.');
       return;
     }
 
-    // Evita reinjeção
-    const existing = document.querySelector(
-      `script[data-ninetwo-tracking="${gtmId}"]`
-    );
-    if (existing) {
-      if (debug) {
-        console.log('[NineTwo Tracking] Script já carregado:', gtmId);
-      }
-      return;
-    }
-
-    // Garante dataLayer
+    // --- SNIPPET GTM ---
+    
+    // Inicializa dataLayer
     (window as any).dataLayer = (window as any).dataLayer || [];
+    
+    // Push do evento inicial
+    (window as any).dataLayer.push({
+      'gtm.start': new Date().getTime(),
+      event: 'gtm.js'
+    });
 
-    // =========================
-    // ✅ GA4 — gtag.js
-    // =========================
-    if (isGA4) {
-      if (debug) {
-        console.log('[NineTwo Tracking] Inicializando GA4:', gtmId);
-      }
+    // Cria tag script
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+    
+    // Callbacks de Debug
+    script.onload = () => {
+      if (debug) console.log(`[NineTwo Tracking] ✅ GTM carregado com sucesso! (${gtmId})`);
+    };
 
-      // Script externo
-      const gtagScript = document.createElement('script');
-      gtagScript.async = true;
-      gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${gtmId}`;
-      gtagScript.setAttribute('data-ninetwo-tracking', gtmId);
+    script.onerror = () => {
+      if (debug) console.error('[NineTwo Tracking] ❌ Erro ao carregar script do GTM. Verifique AdBlockers.');
+    };
 
-      gtagScript.onload = () => {
-        if (debug) {
-          console.log('[NineTwo Tracking] gtag.js carregado com sucesso');
-        }
-      };
+    // Injeção no Head
+    document.head.appendChild(script);
 
-      gtagScript.onerror = () => {
-        console.error('[NineTwo Tracking] Erro ao carregar gtag.js');
-      };
-
-      document.head.appendChild(gtagScript);
-
-      // Script inline de configuração
-      const inlineScript = document.createElement('script');
-      inlineScript.setAttribute('data-ninetwo-tracking', `${gtmId}-inline`);
-      inlineScript.innerHTML = `
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '${gtmId}', {
-          send_page_view: true
-        });
-      `;
-
-      document.head.appendChild(inlineScript);
-    }
-
-    // =========================
-    // ✅ GTM — gtm.js
-    // =========================
-    if (isGTM) {
-      if (debug) {
-        console.log('[NineTwo Tracking] Inicializando GTM:', gtmId);
-      }
-
-      (window as any).dataLayer.push({
-        'gtm.start': new Date().getTime(),
-        event: 'gtm.js',
-      });
-
-      const gtmScript = document.createElement('script');
-      gtmScript.async = true;
-      gtmScript.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-      gtmScript.setAttribute('data-ninetwo-tracking', gtmId);
-
-      gtmScript.onload = () => {
-        if (debug) {
-          console.log('[NineTwo Tracking] GTM carregado com sucesso');
-        }
-      };
-
-      gtmScript.onerror = () => {
-        console.error('[NineTwo Tracking] Erro ao carregar GTM');
-      };
-
-      document.head.appendChild(gtmScript);
-    }
   }, [gtmId, debug]);
 
   return <>{children}</>;
