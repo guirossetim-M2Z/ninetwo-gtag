@@ -26,7 +26,7 @@ const EXTERNAL_RULES = [
   }
 ];
 
-export const useAutoTagExternal = (enabled: boolean = true) => {
+export const useAutoTagRDStation = (enabled: boolean = true) => {
   useEffect(() => {
     if (!enabled || typeof document === 'undefined') return;
 
