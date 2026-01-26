@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useAutoTrackClick } from './hooks/useAutoTrackClick';
 import { useAutoTrackSubmit } from './hooks/useAutoTrackSubmit';
 import { captureAttribution } from './utils/gtm';
+import { useAutoTagExternal } from './hooks/useAutoTagExternal';
 
 interface TrackingProviderProps {
   children: React.ReactNode;
@@ -20,6 +21,7 @@ export const TrackingProvider: React.FC<TrackingProviderProps> = ({
   // 1. Inicializa listeners globais de interação
   useAutoTrackClick(true);   // Cliques
   useAutoTrackSubmit(true);  // Formulários
+  useAutoTagExternal(true); // <--- Ativa a etiquetagem automática
 
   // 2. Captura UTMs e Referrer para Atribuição (Persistência)
   useEffect(() => {
