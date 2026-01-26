@@ -4,6 +4,10 @@
 Pacote de abstração de Analytics para React e Next.js.
 Facilita a implementação do **Google Tag Manager (GTM)** utilizando **Delegação de Eventos** para cliques (via atributos HTML) e **Intersection Observer** para visualizações e confirmação de leitura.
 
+## ✨ Integrações
+
+- 🚀 **RD Station:** Implementação de eventos para o botão flutuante do whatsapp.
+---
 ## ✨ Funcionalidades
 
 - 🚀 **Zero Boilerplate:** Rastreamento declarativo via atributos `data-nt-ut-*`.
