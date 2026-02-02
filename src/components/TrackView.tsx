@@ -17,7 +17,7 @@ interface TrackViewProps {
 /**
  * TrackView
  * - Dispara {eventName, type: 'view'} quando o elemento entra na viewport (threshold)
- * - Dispara {eventName+'_read_confirmation', type: 'read_confirmation'} se o elemento permanecer visível por `readTime`
+ * - Dispara {eventName+'_section_read', type: 'section_read'} se o elemento permanecer visível por `readTime`
  *
  * Observação: evita usar `display: 'contents'` no wrapper porque em alguns cenários o IntersectionObserver não detecta.
  * Se o wrapper realmente usa display: contents, tentamos observar o primeiro filho disponível.
@@ -51,17 +51,15 @@ export const TrackView: React.FC<TrackViewProps> = ({
           event: 'section_view',
           category,
           label,
-          type: 'view',
         });
         setHasTriggeredView(true);
       }
       if (!hasTriggeredRead) {
         timerRef.current = (window as any).setTimeout(() => {
           pushToDataLayer({
-            event: `read_confirmation`,
+            event: `section_read`,
             category,
             label,
-            type: 'read_confirmation',
           });
           setHasTriggeredRead(true);
         }, readTime);
@@ -84,7 +82,6 @@ export const TrackView: React.FC<TrackViewProps> = ({
               event: 'section_view',
               category,
               label,
-              type: 'view',
             });
             setHasTriggeredView(true);
           }
@@ -92,12 +89,11 @@ export const TrackView: React.FC<TrackViewProps> = ({
           // READ CONFIRMATION
           if (!hasTriggeredRead && timerRef.current === null) {
             timerRef.current = window.setTimeout(() => {
-              if (debug) console.log('[TrackView] read_confirmation ->', eventName, { category, label });
+              if (debug) console.log('[TrackView] section_read ->', eventName, { category, label });
               pushToDataLayer({
-                event: `read_confirmation`,
+                event: `section_read`,
                 category,
                 label,
-                type: 'read_confirmation',
               });
               setHasTriggeredRead(true);
               timerRef.current = null;
