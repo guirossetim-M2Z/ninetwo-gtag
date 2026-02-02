@@ -4,6 +4,25 @@
 Pacote de abstração de Analytics para React e Next.js.
 Facilita a implementação do **Google Tag Manager (GTM)** utilizando **Delegação de Eventos** para cliques (via atributos HTML) e **Intersection Observer** para visualizações e confirmação de leitura.
 
+### 1. Lista de Eventos Padrão
+
+Abaixo estão os eventos disparados automaticamente ou manualmente pelo sistema:
+
+| Nome do Evento (`event`) | Descrição | Quando ocorre? |
+| :--- | :--- | :--- |
+| **`section_view`** | Visualização de Seção | Quando uma seção (Hero, Sobre, FAQ) entra em mais de 50% da viewport do usuário. |
+| **`section_read`** | Leitura de Seção | Quando o usuário permanece com a seção visível por um tempo determinado (ex: >3s), indicando interesse. |
+| **`initiate_whatsapp`** | Início de Conversa | Clique em botões flutuantes ou links que abrem o WhatsApp, mas ainda não confirmam o envio. |
+| **`complete_whatsapp`** | Conversão WhatsApp | Clique em "Enviar Mensagem" ou "Iniciar Conversa" (Lead confirmado). |
+
+---
+
+### 2. Estrutura de Atributos (Data Attributes)
+
+Para que o rastreamento funcione, os elementos HTML devem conter os atributos `data-nt-ut-*`.
+
+**A regra de ouro:** O `event` define **O QUE** aconteceu. O `category` e `label` definem **ONDE** e **COMO**, servindo como filtros principais.
+
 ## ✨ Integrações
 
 - 💉 **RD Station:** Implementação de eventos para o botão flutuante do whatsapp.
